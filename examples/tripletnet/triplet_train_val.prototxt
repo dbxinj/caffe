@@ -4,52 +4,16 @@ layer {
   type: "Data"
   top: "data"
   top: "label"
-  include {
-    phase: TRAIN
-  }
-  transform_param {
-    mirror: true
-    crop_size: 227
-    mean_file: "data/tianchi/final_train_mean.binaryproto"
-  }
-# mean pixel / channel-wise mean instead of mean image
-#  transform_param {
-#    crop_size: 227
-#    mean_value: 104
-#    mean_value: 117
-#    mean_value: 123
-#    mirror: true
-#  }
-  data_param {
-    source: "/data/jixin/tianchi/lmdb_final_train"
-    batch_size: 256
-    backend: LMDB
-  }
-}
-layer {
-  name: "data"
-  type: "Data"
-  top: "data"
-  top: "label"
-  include {
-    phase: TEST
-  }
   transform_param {
     mirror: false
     crop_size: 227
+    #mean_file: "data/tianchi/final_mean.binaryproto"
     mean_file: "data/tianchi/final_train_mean.binaryproto"
   }
-# mean pixel / channel-wise mean instead of mean image
-#  transform_param {
-#    crop_size: 227
-#    mean_value: 104
-#    mean_value: 117
-#    mean_value: 123
-#    mirror: true
-#  }
   data_param {
-    source: "/data/jixin/tianchi/lmdb_final_val"
-    batch_size: 50
+    #source: "/data/jixin/tianchi/lmdb"
+    source: "/data/jixin/tianchi/lmdb_final_train"
+    batch_size: 255
     backend: LMDB
   }
 }
@@ -58,26 +22,10 @@ layer {
   type: "Convolution"
   bottom: "data"
   top: "conv1"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
   convolution_param {
     num_output: 96
     kernel_size: 11
     stride: 4
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
   }
 }
 layer {
@@ -113,27 +61,11 @@ layer {
   type: "Convolution"
   bottom: "norm1"
   top: "conv2"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
   convolution_param {
     num_output: 256
     pad: 2
     kernel_size: 5
     group: 2
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 1
-    }
   }
 }
 layer {
@@ -169,26 +101,10 @@ layer {
   type: "Convolution"
   bottom: "norm2"
   top: "conv3"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
   convolution_param {
     num_output: 384
     pad: 1
     kernel_size: 3
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
   }
 }
 layer {
@@ -202,27 +118,11 @@ layer {
   type: "Convolution"
   bottom: "conv3"
   top: "conv4"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
   convolution_param {
     num_output: 384
     pad: 1
     kernel_size: 3
     group: 2
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 1
-    }
   }
 }
 layer {
@@ -236,27 +136,11 @@ layer {
   type: "Convolution"
   bottom: "conv4"
   top: "conv5"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
   convolution_param {
     num_output: 256
     pad: 1
     kernel_size: 3
     group: 2
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 1
-    }
   }
 }
 layer {
@@ -281,24 +165,8 @@ layer {
   type: "InnerProduct"
   bottom: "pool5"
   top: "fc6"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
   inner_product_param {
     num_output: 4096
-    weight_filler {
-      type: "gaussian"
-      std: 0.005
-    }
-    bias_filler {
-      type: "constant"
-      value: 1
-    }
   }
 }
 layer {
@@ -321,24 +189,8 @@ layer {
   type: "InnerProduct"
   bottom: "fc6"
   top: "fc7"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
   inner_product_param {
     num_output: 4096
-    weight_filler {
-      type: "gaussian"
-      std: 0.005
-    }
-    bias_filler {
-      type: "constant"
-      value: 1
-    }
   }
 }
 layer {
@@ -361,40 +213,46 @@ layer {
   type: "InnerProduct"
   bottom: "fc7"
   top: "fc8"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
   inner_product_param {
     num_output: 676
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
   }
 }
+#layer {
+#  name: "triplet_feat"
+#  type: "TripletGenerate"
+#  bottom: "fc8"
+#  bottom: "label"
+#  top: "triplet_feat"
+#}
 layer {
-  name: "accuracy"
-  type: "Accuracy"
+  name: "slice_layer"
+  type: "Slice"
   bottom: "fc8"
-  bottom: "label"
-  top: "accuracy"
-  include {
-    phase: TEST
+  top: "feat_a"
+  top: "feat_p"
+  top: "feat_n"
+  slice_param {
+    slice_dim: 0
+    slice_point: 85
+    slice_point: 170
   }
 }
 layer {
   name: "loss"
-  type: "SoftmaxWithLoss"
-  bottom: "fc8"
+  type: "TripletLoss"
+  bottom: "feat_a"
+  bottom: "feat_p"
+  bottom: "feat_n"
   bottom: "label"
   top: "loss"
+  triplet_loss_param {
+    margin: 1
+  }
 }
+#layer {
+#  name: "accuracy"
+#  type: "Accuracy"
+#  bottom: "prob"
+#  bottom: "label"
+#  top: "accuracy"
+#}

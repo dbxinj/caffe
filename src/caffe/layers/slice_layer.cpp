@@ -75,6 +75,8 @@ void SliceLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   int offset_slice_axis = 0;
   const Dtype* bottom_data = bottom[0]->cpu_data();
   const int bottom_slice_axis = bottom[0]->shape(slice_axis_);
+  LOG(INFO) << "top size: " << top.size();
+  LOG(INFO) << "num_slices_: " << num_slices_;
   for (int i = 0; i < top.size(); ++i) {
     Dtype* top_data = top[i]->mutable_cpu_data();
     const int top_slice_axis = top[i]->shape(slice_axis_);
@@ -86,7 +88,10 @@ void SliceLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
           bottom_data + bottom_offset, top_data + top_offset);
     }
     offset_slice_axis += top_slice_axis;
+    LOG(INFO) << "top_slice_axis: " << top_slice_axis;
+    LOG(INFO) << "offset_slice_axis: " << offset_slice_axis;
   }
+  exit(0);
 }
 
 template <typename Dtype>
